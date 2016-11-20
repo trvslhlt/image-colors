@@ -1,3 +1,6 @@
+# Sensitive Data
+set_sensitive_env_vars.sh
+
 # Vagrant
 .vagrant
 
