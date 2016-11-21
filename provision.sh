@@ -1,2 +1,10 @@
-sudo apt-get update
-sudo apt -y install golang-go
+sudo su -
+
+apt-get update
+apt -y install git
+apt -y install golang-go
+
+echo "export GOPATH=\"/usr/share/go/\"" >> .profile
+. .profile
+
+go get github.com/gorilla/mux
