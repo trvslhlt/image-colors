@@ -6,12 +6,22 @@ import (
 	"github.com/gorilla/mux"
   "github.com/asaskevich/govalidator"
 	"log"
+  "io"
+  "io/ioutil"
 	"net/http"
   "net/url"
 	"os"
 )
 
 func main() {
+
+  // imgUrl, _ := url.Parse("http://www.jqueryscript.net/images/Simplest-Responsive-jQuery-Image-Lightbox-Plugin-simple-lightbox.jpg")
+  // file, err := downloadFile(imgUrl)
+  // if err != nil {
+  //   panic(err)
+  // }
+  // fmt.Println(file.Name())
+
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/").HandlerFunc(Index)
 	r.Methods("GET").Path("/api/num_colors").HandlerFunc(ApiNumColors)
@@ -36,5 +46,37 @@ func ApiNumColors(w http.ResponseWriter, r *http.Request) {
     http.Error(w, "Please use a valid url.", http.StatusInternalServerError)
     return
   }
-	fmt.Fprintln(w, imgUrl)
+
+  file, err := downloadFile(imgUrl)
+  if err != nil {
+    http.Error(w, "We failed to download the iamge file.", http.StatusInternalServerError)
+    return
+  }
+  fmt.Println(file.Name())
+  fmt.Println(imgPath)
+	fmt.Fprintln(w, "<html><body><img src=\"" + imgPath + "\"></body></html>")
+}
+
+// func downloadFile(filepath string, url string) (err error) {
+func downloadFile(url *url.URL) (f *os.File, err error) {
+
+  // create the local file
+  file, err := ioutil.TempFile("", "img")
+  if err != nil {
+    return nil, err
+  }
+  defer file.Close()
+
+  resp, err := http.Get(url.String())
+  if err != nil {
+    return nil, err
+  }
+  defer resp.Body.Close()
+
+  _, err = io.Copy(file, resp.Body)
+  if err != nil {
+    return nil, err
+  }
+
+  return file, nil
 }
