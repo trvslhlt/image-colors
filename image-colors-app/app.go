@@ -11,17 +11,11 @@ import (
 	"net/http"
   "net/url"
 	"os"
+  "os/exec"
+  "strconv"
 )
 
 func main() {
-
-  // imgUrl, _ := url.Parse("http://www.jqueryscript.net/images/Simplest-Responsive-jQuery-Image-Lightbox-Plugin-simple-lightbox.jpg")
-  // file, err := downloadFile(imgUrl)
-  // if err != nil {
-  //   panic(err)
-  // }
-  // fmt.Println(file.Name())
-
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/").HandlerFunc(Index)
 	r.Methods("GET").Path("/api/num_colors").HandlerFunc(ApiNumColors)
@@ -49,18 +43,20 @@ func ApiNumColors(w http.ResponseWriter, r *http.Request) {
 
   file, err := downloadFile(imgUrl)
   if err != nil {
-    http.Error(w, "We failed to download the iamge file.", http.StatusInternalServerError)
+    http.Error(w, "We failed to download the image file.", http.StatusInternalServerError)
     return
   }
-  fmt.Println(file.Name())
-  fmt.Println(imgPath)
-	fmt.Fprintln(w, "<html><body><img src=\"" + imgPath + "\"></body></html>")
+
+  colorCount, err := getNumberOfColorsInFile(file)
+  if err != nil {
+    http.Error(w, "We failed to get the number of colors from the image.", http.StatusInternalServerError)
+    return
+  }
+
+	fmt.Fprintln(w, "<html><body><p>" + strconv.Itoa(colorCount) + "</p><img src=\"" + imgPath + "\"></body></html>")
 }
 
-// func downloadFile(filepath string, url string) (err error) {
 func downloadFile(url *url.URL) (f *os.File, err error) {
-
-  // create the local file
   file, err := ioutil.TempFile("", "img")
   if err != nil {
     return nil, err
@@ -79,4 +75,20 @@ func downloadFile(url *url.URL) (f *os.File, err error) {
   }
 
   return file, nil
+}
+
+func getNumberOfColorsInFile(f *os.File) (n int, err error) {
+  program := "identify"
+  args := []string{"-format", "%k", f.Name()}
+  cmd := exec.Command(program, args...)
+  output, err := cmd.CombinedOutput()
+  if err != nil {
+    return -1, err
+  }
+  s := string(output)
+  i, err := strconv.Atoi(s)
+  if err != nil {
+    return -1, err
+  }
+  return i, nil
 }
