@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+  "github.com/asaskevich/govalidator"
 	"log"
 	"net/http"
+  "net/url"
 	"os"
 )
 
@@ -24,6 +26,15 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiNumColors(w http.ResponseWriter, r *http.Request) {
-	imgUrl := r.URL.Query().Get("src")
-	fmt.Fprintf(w, "%s", imgUrl)
+	imgPath := r.URL.Query().Get("src")
+  if !govalidator.IsURL(imgPath) {
+    http.Error(w, "Please use a valid url.", http.StatusBadRequest)
+    return
+  }
+  imgUrl, err := url.Parse(imgPath)
+  if err != nil {
+    http.Error(w, "Please use a valid url.", http.StatusInternalServerError)
+    return
+  }
+	fmt.Fprintln(w, imgUrl)
 }

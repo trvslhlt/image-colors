@@ -9,3 +9,4 @@ echo "export GOPATH=\"/usr/share/go/\"" >> .profile
 
 go get github.com/gorilla/mux
 go get github.com/gorilla/handlers
+go get github.com/asaskevich/govalidator
