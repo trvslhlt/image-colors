@@ -1,8 +1,9 @@
 sudo su -
 
 apt-get update
-apt -y install git
-apt -y install golang-go
+apt-get -y install git
+apt-get -y install golang-go
+apt-get -y install imagemagick 
 
 echo "export GOPATH=\"/usr/share/go/\"" >> .profile
 . .profile
