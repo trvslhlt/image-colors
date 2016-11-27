@@ -37,11 +37,11 @@ service nginx restart
 echo "need to add nginx to supervisor"
 
 
-# process management tool
-apt-get -y install supervisor
-addgroup --system supervisor
-adduser vagrant supervisor
-cp /vagrant/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-cp /vagrant/supervisor/image-colors-app.conf /etc/supervisor/conf.d/image-colors-app.conf
-service supervisor restart
-supervisorctl reload
+# # process management tool
+# apt-get -y install supervisor
+# addgroup --system supervisor
+# adduser vagrant supervisor
+# cp /vagrant/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+# cp /vagrant/supervisor/image-colors-app.conf /etc/supervisor/conf.d/image-colors-app.conf
+# service supervisor restart
+# supervisorctl reload
