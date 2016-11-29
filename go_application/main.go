@@ -53,6 +53,11 @@ func ApiNumColors(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+  err = deleteFile(file)
+  if err != nil {
+    fmt.Println("failure to delete file")
+  }
+
 	fmt.Fprintln(w, "<html><body><p>" + strconv.Itoa(colorCount) + "</p><img src=\"" + imgPath + "\"></body></html>")
 }
 
@@ -75,6 +80,11 @@ func downloadFile(url *url.URL) (f *os.File, err error) {
   }
 
   return file, nil
+}
+
+func deleteFile(f *os.File) (err error) {
+  fmt.Println(f.Name())
+  return os.Remove(f.Name())
 }
 
 func getNumberOfColorsInFile(f *os.File) (n int, err error) {
