@@ -15,6 +15,8 @@ import (
   "strconv"
 )
 
+var url_to_color_count = map[string]int{}
+
 func main() {
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/").HandlerFunc(Index)
@@ -25,7 +27,6 @@ func main() {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.URL.Query())
 	fmt.Fprintln(w, "visit /api/num_colors?src=<image url> to get the number of colors in your image")
 }
 
@@ -41,17 +42,25 @@ func ApiNumColors(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+  colorCount := getNumberOfColorsForURL(imgUrl)
+  if colorCount != 0 {
+    fmt.Fprintln(w, "<html><body><p>" + strconv.Itoa(colorCount) + "</p><img src=\"" + imgPath + "\"></body></html>")
+    return
+  }
+
   file, err := downloadFile(imgUrl)
   if err != nil {
     http.Error(w, "We failed to download the image file.", http.StatusInternalServerError)
     return
   }
 
-  colorCount, err := getNumberOfColorsInFile(file)
+  colorCount, err = getNumberOfColorsInFile(file)
   if err != nil {
     http.Error(w, "We failed to get the number of colors from the image.", http.StatusInternalServerError)
     return
   }
+
+  setNumberOfColorsForURL(imgUrl, colorCount)
 
   err = deleteFile(file)
   if err != nil {
@@ -83,7 +92,6 @@ func downloadFile(url *url.URL) (f *os.File, err error) {
 }
 
 func deleteFile(f *os.File) (err error) {
-  fmt.Println(f.Name())
   return os.Remove(f.Name())
 }
 
@@ -101,4 +109,12 @@ func getNumberOfColorsInFile(f *os.File) (n int, err error) {
     return -1, err
   }
   return i, nil
+}
+
+func setNumberOfColorsForURL(url *url.URL, colorCount int) {
+  url_to_color_count[url.String()] = colorCount
+}
+
+func getNumberOfColorsForURL(url *url.URL) (colorCount int) {
+  return url_to_color_count[url.String()]
 }
