@@ -22,8 +22,8 @@ func main() {
 	r.Methods("GET").Path("/").HandlerFunc(Index)
 	r.Methods("GET").Path("/api/num_colors").HandlerFunc(ApiNumColors)
 	loggedR := handlers.LoggingHandler(os.Stdout, r)
-	fmt.Println("Now listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", loggedR))
+	fmt.Println("Now listening on port 80")
+	log.Fatal(http.ListenAndServe(":80", loggedR))
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
