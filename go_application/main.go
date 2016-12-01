@@ -67,7 +67,7 @@ func ApiNumColors(w http.ResponseWriter, r *http.Request) {
     fmt.Println("failure to delete file")
   }
 
-	fmt.Fprintln(w, "<html><body><p>" + strconv.Itoa(colorCount) + "</p><img src=\"" + imgPath + "\"></body></html>")
+	fmt.Fprintln(w, strconv.Itoa(colorCount))
 }
 
 func downloadFile(url *url.URL) (f *os.File, err error) {
