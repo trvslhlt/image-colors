@@ -62,10 +62,12 @@ func ApiNumColors(w http.ResponseWriter, r *http.Request) {
 
   setNumberOfColorsForURL(imgUrl, colorCount)
 
-  err = deleteFile(file)
-  if err != nil {
-    fmt.Println("failure to delete file")
-  }
+  go func() {
+    err = deleteFile(file)
+    if err != nil {
+      fmt.Println("failure to delete file")
+    }
+  }()
 
 	fmt.Fprintln(w, strconv.Itoa(colorCount))
 }
